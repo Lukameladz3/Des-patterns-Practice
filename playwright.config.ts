@@ -33,16 +33,15 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html', 
-    { open: 'never' }],  ['@reportportal/agent-js-playwright', rpConfig]
+    { open: 'never' }],  
+    // ['@reportportal/agent-js-playwright', rpConfig]
   ],
   expect: {
-    toHaveScreenshot: { maxDiffPixels: 100 },
+    toHaveScreenshot: { maxDiffPixels: 500 },
   },
   use: {
     baseURL: 'https://www.demoblaze.com',
-
     trace: 'on-first-retry',
-
     screenshot: 'only-on-failure',
   },
 

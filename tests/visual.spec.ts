@@ -6,6 +6,29 @@ import { SignUpFlow } from '../src/patterns/template/SignUpFlow';
 import { LoginFlow } from '../src/patterns/template/LoginFlow';
 import { PRODUCTS } from '../src/constants/TestConstants';
 import { VISUAL_SNAPSHOTS, VIEWPORTS, VISUAL_PLACEHOLDERS } from '../src/constants/VisualConstants';
+import { Page } from '@playwright/test';
+
+/**
+ * Helper function to hide dynamic elements (carousel/slider) that cause flakiness
+ */
+async function hideCarousel(page: Page): Promise<void> {
+    // Wait for carousel to be present before hiding it
+    try {
+        await page.waitForSelector('#carouselExampleIndicators, .carousel', { timeout: 2000 });
+    } catch {
+        // Carousel might not exist on all pages, that's okay
+    }
+    
+    await page.addStyleTag({
+        content: `
+            #carouselExampleIndicators,
+            .carousel,
+            .carousel-inner {
+                display: none !important;
+            }
+        `
+    });
+}
 
 test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
 
@@ -34,8 +57,8 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         // ==============================================
         // COMPARISON 1: Homepage after initial load
         // ==============================================
-        // Automatically compares to '01-homepage-initial.png'
-        // Automatically compares to '01-homepage-initial.png'
+        // Hide carousel to prevent timing-related visual differences
+        await hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.HOMEPAGE.INITIAL, { fullPage: true });
 
         // Perform signup and login
@@ -110,42 +133,54 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
     });
 
     test('Visual test: Product catalog comparison', async ({ page, homePage }) => {
+        // Wait for initial product listing to load
+        const initialProductsResponse = page.waitForResponse(resp => 
+            (resp.url().includes('entries') || resp.url().includes('view')) && resp.status() === 200
+        );
         await homePage.goto();
+        await initialProductsResponse;
+        await page.waitForTimeout(1000); // UI render buffer
 
         // ==============================================
         // COMPARISON 1: All products view
         // ==============================================
-        // ==============================================
-        // COMPARISON 1: All products view
-        // ==============================================
+        await hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.ALL, { fullPage: true });
 
         // ==============================================
         // COMPARISON 2: Laptops category
         // ==============================================
+        // Wait for 'bycat' API response to ensure Laptops are loaded
+        const laptopsResponse = page.waitForResponse(resp => 
+            resp.url().includes('bycat') && resp.status() === 200
+        );
         await homePage.goToLaptops();
-        await expect(homePage.productCardImages.first()).toBeVisible();
-        await page.waitForLoadState('domcontentloaded');
+        await laptopsResponse;
+        await page.waitForTimeout(1000); // UI render buffer
         
-        await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.LAPTOPS, { fullPage: true });
+        await expect.soft(page).toHaveScreenshot('catalog-02-laptops.png', { fullPage: true });
 
         // ==============================================
         // COMPARISON 3: Monitors category
         // ==============================================
+        // Wait for 'bycat' API response to ensure Monitors are loaded
+        const monitorsResponse = page.waitForResponse(resp => 
+            resp.url().includes('bycat') && resp.status() === 200
+        );
         await homePage.goToMonitors();
-        await expect(homePage.productCardImages.first()).toBeVisible();
-        await page.waitForLoadState('domcontentloaded');
+        await monitorsResponse;
+        await page.waitForTimeout(1000); // UI render buffer
         
-        await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.MONITORS, { fullPage: true });
+        await expect.soft(page).toHaveScreenshot('catalog-03-monitors.png', { fullPage: true });
     });
 
     test('Visual test: Responsive design validation', async ({ page, homePage }) => {
         // This test captures the same page at different viewport sizes
         await homePage.goto();
+        
+        // Hide carousel to prevent flakiness
+        await hideCarousel(page);
 
-        // ==============================================
-        // COMPARISON 1: Desktop view (1920x1080)
-        // ==============================================
         // ==============================================
         // COMPARISON 1: Desktop view (1920x1080)
         // ==============================================

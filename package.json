@@ -7,7 +7,6 @@
         "test": "playwright test",
         "test:headed": "playwright test --headed",
         "test:ui": "playwright test --ui",
-        "test:ui": "playwright test --ui",
         "test:debug": "playwright test --debug",
         "test:visual": "playwright test tests/visual.spec.ts",
         "test:visual:update": "playwright test tests/visual.spec.ts --update-snapshots",
