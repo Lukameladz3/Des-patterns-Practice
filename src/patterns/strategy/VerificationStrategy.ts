@@ -33,14 +33,12 @@ export class TitleOnlyStrategy implements VerificationStrategy {
     }
 
     public async verify(page: Page, expectedProduct: Product): Promise<void> {
-        console.log(`  → Using strategy: ${this.getStrategyName()}`);
 
         // Verify product title is visible and matches expected name
         const titleLocator = page.locator('.name');
         await expect(titleLocator).toBeVisible();
         await expect(titleLocator).toContainText(expectedProduct.name);
 
-        console.log(`  ✓ Product title verified: ${expectedProduct.name}`);
     }
 }
 
@@ -55,13 +53,11 @@ export class TitleAndPriceStrategy implements VerificationStrategy {
     }
 
     public async verify(page: Page, expectedProduct: Product): Promise<void> {
-        console.log(`  → Using strategy: ${this.getStrategyName()}`);
 
         // Verify product title
         const titleLocator = page.locator('.name');
         await expect(titleLocator).toBeVisible();
         await expect(titleLocator).toContainText(expectedProduct.name);
-        console.log(`  ✓ Product title verified: ${expectedProduct.name}`);
 
         // Verify product price if provided
         if (expectedProduct.price !== undefined) {
@@ -74,7 +70,6 @@ export class TitleAndPriceStrategy implements VerificationStrategy {
             if (priceMatch) {
                 const actualPrice = parseInt(priceMatch[1]);
                 expect(actualPrice).toBe(expectedProduct.price);
-                console.log(`  ✓ Product price verified: $${expectedProduct.price}`);
             }
         }
     }
@@ -91,35 +86,29 @@ export class FullProductDetailsStrategy implements VerificationStrategy {
     }
 
     public async verify(page: Page, expectedProduct: Product): Promise<void> {
-        console.log(`  → Using strategy: ${this.getStrategyName()}`);
 
         // Verify product title
         const titleLocator = page.locator('.name');
         await expect(titleLocator).toBeVisible();
         await expect(titleLocator).toContainText(expectedProduct.name);
-        console.log(`  ✓ Product title verified: ${expectedProduct.name}`);
 
         // Verify product price
         if (expectedProduct.price !== undefined) {
             const priceLocator = page.locator('.price-container');
             await expect(priceLocator).toBeVisible();
-            console.log(`  ✓ Product price verified`);
         }
 
         // Verify product description
         const descriptionLocator = page.locator('#more-information');
         await expect(descriptionLocator).toBeVisible();
-        console.log(`  ✓ Product description is visible`);
 
         // Verify product image
         const imageLocator = page.locator('.product-image img, img.img-fluid');
         await expect(imageLocator).toBeVisible();
-        console.log(`  ✓ Product image is visible`);
 
         // Verify "Add to cart" button is present
         const addToCartButton = page.locator('a.btn-success', { hasText: 'Add to cart' });
         await expect(addToCartButton).toBeVisible();
-        console.log(`  ✓ Add to cart button is visible`);
     }
 }
 

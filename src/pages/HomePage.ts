@@ -19,6 +19,7 @@ export class HomePage extends BasePage {
     readonly phonesCategory: Locator;
     readonly laptopsCategory: Locator;
     readonly monitorsCategory: Locator;
+    readonly productCardImages: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -32,6 +33,7 @@ export class HomePage extends BasePage {
         this.phonesCategory = page.getByRole('link', { name: 'Phones' });
         this.laptopsCategory = page.getByRole('link', { name: 'Laptops' });
         this.monitorsCategory = page.getByRole('link', { name: 'Monitors' });
+        this.productCardImages = page.locator('.card-img-top');
     }
 
     /**

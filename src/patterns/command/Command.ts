@@ -18,10 +18,8 @@ export class ClickCommand implements Command {
     }
 
     public async execute(): Promise<void> {
-        console.log(`  → Executing: ${this.description}`);
         const element = this.page.locator(this.selector);
         await element.click();
-        console.log(`  ✓ Clicked: ${this.selector}`);
     }
 
     public getDescription(): string {
@@ -44,18 +42,14 @@ export class TypeCommand implements Command {
     }
 
     public async execute(): Promise<void> {
-        console.log(`  → Executing: ${this.description}`);
         const element = this.page.locator(this.selector);
         this.previousValue = await element.inputValue().catch(() => '');
         await element.fill(this.text);
-        console.log(`  ✓ Typed into: ${this.selector}`);
     }
 
     public async undo(): Promise<void> {
         if (this.previousValue !== undefined) {
-            console.log(`  ← Undoing: ${this.description}`);
             await this.page.locator(this.selector).fill(this.previousValue);
-            console.log(`  ✓ Restored previous value`);
         }
     }
 
@@ -76,9 +70,7 @@ export class NavigateCommand implements Command {
     }
 
     public async execute(): Promise<void> {
-        console.log(`  → Executing: ${this.description}`);
         await this.page.goto(this.url);
-        console.log(`  ✓ Navigated to: ${this.url}`);
     }
 
     public getDescription(): string {
@@ -98,9 +90,7 @@ export class WaitCommand implements Command {
     }
 
     public async execute(): Promise<void> {
-        console.log(`  → Executing: ${this.description}`);
         await expect(this.page.locator(this.selector)).toBeVisible();
-        console.log(`  ✓ Element visible: ${this.selector}`);
     }
 
     public getDescription(): string {
@@ -122,10 +112,8 @@ export class VerifyCommand implements Command {
     }
 
     public async execute(): Promise<void> {
-        console.log(`  → Executing: ${this.description}`);
         const element = this.page.locator(this.selector);
         await expect(element).toContainText(this.expectedText);
-        console.log(`  ✓ Verification passed: ${this.selector}`);
     }
 
     public getDescription(): string {

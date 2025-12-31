@@ -11,12 +11,10 @@ export function withLogging(action: PageAction, actionName: string): PageAction 
         const startTime = Date.now();
         const timestamp = new Date().toISOString();
 
-        console.log(`[${timestamp}] → Starting: ${actionName}`);
 
         try {
             const result = await action(...args);
             const duration = Date.now() - startTime;
-            console.log(`[${timestamp}] ✓ Completed: ${actionName} (${duration}ms)`);
             return result;
         } catch (error) {
             const duration = Date.now() - startTime;
@@ -33,7 +31,6 @@ export function withScreenshot(page: Page, action: PageAction, actionName: strin
         } catch (error) {
             const screenshotName = `failure-${actionName.replace(/\s+/g, '-')}-${Date.now()}.png`;
             await page.screenshot({ path: `screenshots/${screenshotName}`, fullPage: true });
-            console.log(`  📸 Screenshot saved: ${screenshotName}`);
             throw error;
         }
     };
@@ -51,7 +48,6 @@ export function withRetry(maxRetries: number = 3, delayMs: number = 1000): Actio
                     lastError = error;
 
                     if (attempt < maxRetries) {
-                        console.log(`  ⟳ Retry ${attempt}/${maxRetries - 1} for: ${actionName}`);
                         await new Promise(resolve => setTimeout(resolve, delayMs));
                     }
                 }
@@ -70,11 +66,9 @@ export function withTiming(action: PageAction, actionName: string): PageAction {
         try {
             const result = await action(...args);
             const duration = (performance.now() - startTime).toFixed(2);
-            console.log(`  ⏱️  ${actionName}: ${duration}ms`);
             return result;
         } catch (error) {
             const duration = (performance.now() - startTime).toFixed(2);
-            console.log(`  ⏱️  ${actionName}: ${duration}ms (failed)`);
             throw error;
         }
     };

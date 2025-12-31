@@ -25,7 +25,6 @@ export class DatabaseManager {
      * Private constructor prevents direct instantiation
      */
     private constructor() {
-        console.log('📦 DatabaseManager: Initializing MySQL singleton instance...');
         
         // Create MySQL connection pool
         this.pool = mysql.createPool({
@@ -82,7 +81,6 @@ export class DatabaseManager {
         
         try {
             await this.pool.execute(query, [user.username, user.password, user.email || null]);
-            console.log(`  → Saved user to MySQL: ${user.username}`);
         } catch (error) {
             console.error(`  ✗ Failed to save user: ${error}`);
             throw error;
@@ -100,14 +98,12 @@ export class DatabaseManager {
             const users = rows as any[];
             
             if (users.length > 0) {
-                console.log(`  → Retrieved user from MySQL: ${username}`);
                 return {
                     username: users[0].username,
                     password: users[0].password,
                     email: users[0].email
                 };
             } else {
-                console.log(`  ⚠ User not found in MySQL: ${username}`);
                 return undefined;
             }
         } catch (error) {
@@ -125,7 +121,6 @@ export class DatabaseManager {
         try {
             const [rows] = await this.pool.execute(query);
             const users = rows as any[];
-            console.log(`  → Retrieved ${users.length} user(s) from MySQL`);
             
             return users.map(row => ({
                 username: row.username,
@@ -158,9 +153,7 @@ export class DatabaseManager {
                 product.category || null,
                 product.description || null
             ]);
-            console.log(`  → Saved product to MySQL: ${product.name}`);
         } catch (error) {
-            console.error(`  ✗ Failed to save product: ${error}`);
             throw error;
         }
     }
@@ -176,7 +169,6 @@ export class DatabaseManager {
             const products = rows as any[];
             
             if (products.length > 0) {
-                console.log(`  → Retrieved product from MySQL: ${name}`);
                 return {
                     name: products[0].name,
                     price: products[0].price,
@@ -184,7 +176,6 @@ export class DatabaseManager {
                     description: products[0].description
                 };
             } else {
-                console.log(`  ⚠ Product not found in MySQL: ${name}`);
                 return undefined;
             }
         } catch (error) {
@@ -202,7 +193,6 @@ export class DatabaseManager {
         try {
             const [rows] = await this.pool.execute(query);
             const products = rows as any[];
-            console.log(`  → Retrieved ${products.length} product(s) from MySQL`);
             
             return products.map(row => ({
                 name: row.name,
@@ -230,7 +220,6 @@ export class DatabaseManager {
         
         try {
             await this.pool.execute(query, [key, valueStr]);
-            console.log(`  → Saved test data to MySQL: ${key}`);
         } catch (error) {
             console.error(`  ✗ Failed to save test data: ${error}`);
             throw error;
@@ -270,7 +259,6 @@ export class DatabaseManager {
             await this.pool.execute('DELETE FROM users');
             await this.pool.execute('DELETE FROM products');
             await this.pool.execute('DELETE FROM test_data');
-            console.log('  → DatabaseManager: All MySQL data cleared');
         } catch (error) {
             console.error(`  ✗ Failed to clear all data: ${error}`);
             throw error;
@@ -283,7 +271,6 @@ export class DatabaseManager {
     public async clearUsers(): Promise<void> {
         try {
             await this.pool.execute('DELETE FROM users');
-            console.log('  → DatabaseManager: MySQL users cleared');
         } catch (error) {
             console.error(`  ✗ Failed to clear users: ${error}`);
             throw error;
@@ -296,7 +283,6 @@ export class DatabaseManager {
     public async clearProducts(): Promise<void> {
         try {
             await this.pool.execute('DELETE FROM products');
-            console.log('  → DatabaseManager: MySQL products cleared');
         } catch (error) {
             console.error(`  ✗ Failed to clear products: ${error}`);
             throw error;
@@ -315,11 +301,6 @@ export class DatabaseManager {
             const users = (userRows as any[])[0].count;
             const products = (productRows as any[])[0].count;
             const testData = (testDataRows as any[])[0].count;
-            
-            console.log(`\n📊 MySQL DatabaseManager Statistics:`);
-            console.log(`  → Users stored: ${users}`);
-            console.log(`  → Products stored: ${products}`);
-            console.log(`  → Test data entries: ${testData}`);
             
             return { users, products, testData };
         } catch (error) {
@@ -368,7 +349,6 @@ export class DatabaseManager {
             const [result] = await this.pool.execute(query, [username]);
             const deleted = (result as any).affectedRows > 0;
             if (deleted) {
-                console.log(`  → Deleted user from MySQL: ${username}`);
             }
             return deleted;
         } catch (error) {
@@ -386,9 +366,7 @@ export class DatabaseManager {
         try {
             const [result] = await this.pool.execute(query, [name]);
             const deleted = (result as any).affectedRows > 0;
-            if (deleted) {
-                console.log(`  → Deleted product from MySQL: ${name}`);
-            }
+
             return deleted;
         } catch (error) {
             console.error(`  ✗ Failed to delete product: ${error}`);
@@ -402,7 +380,6 @@ export class DatabaseManager {
     public async closeConnection(): Promise<void> {
         try {
             await this.pool.end();
-            console.log('  → MySQL connection pool closed');
         } catch (error) {
             console.error(`  ✗ Failed to close connection: ${error}`);
             throw error;

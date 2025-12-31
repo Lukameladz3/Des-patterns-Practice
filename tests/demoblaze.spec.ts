@@ -19,16 +19,15 @@ import { CommandExecutor } from '../src/patterns/command/CommandExecutor';
 import { withLogging } from '../src/patterns/decorator/ActionDecorator';
 import { PRODUCTS, SELECTORS, URLS } from '../src/constants/TestConstants';
 
+
 test.describe('Design Patterns Demo - DemoBlaze E2E Test', () => {
 
     test('Complete user journey with all design patterns', async ({ page, homePage, productPage, cartPage }) => {
-        console.log('\n📌 Pattern 1: SINGLETON - Database Manager');
         const db = DatabaseManager.getInstance();
         
         // Demonstrate singleton behavior - same instance
         const db2 = DatabaseManager.getInstance();
         expect(db.verifyInstanceIsSingleton(db, db2)).toBeTruthy();
-        
         // Clear any previous test data
         await db.clearAll();
 
@@ -121,7 +120,6 @@ test.describe('Design Patterns Demo - DemoBlaze E2E Test', () => {
         await executor.executeAll();
         executor.printHistory();
 
-        console.log('✓ Command pattern demo completed\n');
     });
 
     test('Demonstrate Builder Pattern variations', async () => {

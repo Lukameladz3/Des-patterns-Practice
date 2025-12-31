@@ -13,6 +13,7 @@ export class ProductPage extends BasePage {
     readonly productPrice: Locator;
     readonly productDescription: Locator;
     readonly productImage: Locator;
+    readonly productContentImage: Locator;
     readonly addToCartButton: Locator;
 
     constructor(page: Page) {
@@ -21,6 +22,7 @@ export class ProductPage extends BasePage {
         this.productPrice = page.locator('.price-container');
         this.productDescription = page.locator('#more-information');
         this.productImage = page.locator('img.img-fluid');
+        this.productContentImage = page.locator('.product-content img');
         this.addToCartButton = page.getByRole('link', { name: 'Add to cart' });
     }
 

@@ -41,14 +41,12 @@ export class CommandExecutor {
      * Executes all queued commands in sequence.
      */
     public async executeAll(): Promise<void> {
-        console.log(`\n→ Executing ${this.commandQueue.length} commands...`);
 
         while (this.commandQueue.length > 0) {
             const command = this.commandQueue.shift()!;
             await this.executeCommand(command);
         }
 
-        console.log(`✓ All commands executed successfully\n`);
     }
 
     /**
@@ -58,16 +56,12 @@ export class CommandExecutor {
         const lastCommand = this.executedCommands.pop();
 
         if (!lastCommand) {
-            console.log('No commands to undo');
             return;
         }
 
         if (lastCommand.undo) {
             await lastCommand.undo();
-            console.log(`✓ Undone: ${lastCommand.getDescription()}`);
-        } else {
-            console.log(`Cannot undo: ${lastCommand.getDescription()} (undo not supported)`);
-        }
+        } 
     }
 
     /**
@@ -96,11 +90,8 @@ export class CommandExecutor {
      * Prints the command history.
      */
     public printHistory(): void {
-        console.log('\n=== Command History ===');
         this.executedCommands.forEach((cmd, index) => {
-            console.log(`${index + 1}. ${cmd.getDescription()}`);
         });
-        console.log('=======================\n');
     }
 }
 

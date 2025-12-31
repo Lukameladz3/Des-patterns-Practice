@@ -8,6 +8,23 @@ import dotenv from 'dotenv';
 import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+// ReportPortal configuration - replace placeholders with real values or
+// move to environment variables as needed.
+export const rpConfig = {
+  apiKey: process.env.REPORTPORTAL_API_KEY || 'test_3YJxqdX4SQK2dtc4RWrbUC-JvoAgcbWZPILn2jo9xh4KKTBChiF0ECzTOSju8Gcp',
+  endpoint: process.env.REPORTPORTAL_ENDPOINT || 'http://localhost:8080/api/v2',
+  project: process.env.REPORTPORTAL_PROJECT || 'superadmin_personal',
+  launch: 'Playwright SDD Tests',
+  attributes: [
+    { key: 'framework', value: 'playwright' },
+    { key: 'env', value: 'dev' },
+    { key: 'group', value: 'SDD' },
+  ],
+  description: 'Automated tests from Playwright SDD Framework',
+  skippedIssue: false,
+  includeTestSteps: true, // Include @step annotations as nested steps in ReportPortal
+};
+
 export default defineConfig({
   testDir: './tests',
   timeout: 60000,
@@ -15,7 +32,12 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', { open: 'never' }]],
+  reporter: [['html', 
+    { open: 'never' }],  ['@reportportal/agent-js-playwright', rpConfig]
+  ],
+  expect: {
+    toHaveScreenshot: { maxDiffPixels: 100 },
+  },
   use: {
     baseURL: 'https://www.demoblaze.com',
 
