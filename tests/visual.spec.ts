@@ -1,5 +1,5 @@
 import { test, expect } from '../src/fixtures/pages.fixture';
-import { DatabaseManager } from '../src/patterns/singleton/DatabaseManager';
+import { getDatabaseManager } from '../src/patterns/singleton/DatabaseFactory';
 import { UserBuilder } from '../src/patterns/builder/UserBuilder';
 import { ProductBuilder } from '../src/patterns/builder/ProductBuilder';
 import { SignUpFlow } from '../src/patterns/template/SignUpFlow';
@@ -33,7 +33,7 @@ async function hideCarousel(page: Page): Promise<void> {
 test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
 
     test('Visual test: Complete user journey with 3 key screenshots', async ({ page, homePage, productPage, cartPage }) => {
-        const db = DatabaseManager.getInstance();
+        const db = getDatabaseManager();
         await db.clearAll();
 
         // Create test user
