@@ -20,16 +20,13 @@ import { DatabaseManager as MySQLDatabaseManager } from './DatabaseManager';
 export function getDatabaseManager(): IDatabaseManager {
     const useMockDB = process.env.USE_MOCK_DB === 'true';
     
-    // if (useMockDB) {
-        console.log('  ℹ Using MockDatabaseManager (in-memory storage)');
+    if (useMockDB) {
         return MockDatabaseManager.getInstance() as unknown as IDatabaseManager;
-    // }
+    }
     
-    // console.log('  ℹ Using MySQLDatabaseManager (real database)');
-    // return MySQLDatabaseManager.getInstance() as unknown as IDatabaseManager;
+    return MySQLDatabaseManager.getInstance() as unknown as IDatabaseManager;
 }
 
-// Export for backward compatibility
 export { IDatabaseManager } from './IDatabaseManager';
 export { MockDatabaseManager } from './MockDatabaseManager';
 export { DatabaseManager } from './DatabaseManager';
