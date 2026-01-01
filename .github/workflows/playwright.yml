@@ -41,7 +41,7 @@ jobs:
 
   deploy:
     needs: test
-    if: always()
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     permissions:
       pages: write
       id-token: write
