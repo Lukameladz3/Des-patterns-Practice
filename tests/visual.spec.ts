@@ -32,9 +32,6 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         // Navigate to homepage
         await homePage.goto();
 
-        // ==============================================
-        // COMPARISON 1: Homepage after initial load
-        // ==============================================
         await VisualTestHelper.hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.HOMEPAGE.INITIAL, { fullPage: true });
 
@@ -48,9 +45,6 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         // Verify login success
         await expect(homePage.usernameDisplay).toContainText(user.username);
 
-        // ==============================================
-        // COMPARISON 2: Homepage after successful login
-        // ==============================================
         await VisualTestHelper.normalizeDynamicContent(page, VISUAL_PLACEHOLDERS.USERNAME);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.HOMEPAGE.LOGGED_IN, { fullPage: true });
 
@@ -78,9 +72,6 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         // Verify product is in cart
         await expect(cartPage.cartItems.filter({ hasText: product.name })).toBeVisible();
 
-        // ==============================================
-        // COMPARISON 3: Cart page with added product
-        // ==============================================
         await VisualTestHelper.normalizeDynamicContent(page, VISUAL_PLACEHOLDERS.USERNAME);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CART.WITH_PRODUCT, { fullPage: true });
 
@@ -96,22 +87,13 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         await homePage.goto();
         await VisualTestHelper.waitForInitialProducts(page);
 
-        // ==============================================
-        // COMPARISON 1: All products view
-        // ==============================================
         await VisualTestHelper.hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.ALL, { fullPage: true });
 
-        // ==============================================
-        // COMPARISON 2: Laptops category
-        // ==============================================
         await homePage.goToLaptops();
         await VisualTestHelper.waitForCategoryLoad(page);
         await expect.soft(page).toHaveScreenshot('catalog-02-laptops.png', { fullPage: true });
 
-        // ==============================================
-        // COMPARISON 3: Monitors category
-        // ==============================================
         await homePage.goToMonitors();
         await VisualTestHelper.waitForCategoryLoad(page);
         await expect.soft(page).toHaveScreenshot('catalog-03-monitors.png', { fullPage: true });
@@ -121,23 +103,14 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
         await homePage.goto();
         await VisualTestHelper.hideCarousel(page);
 
-        // ==============================================
-        // COMPARISON 1: Desktop view (1920x1080)
-        // ==============================================
         await page.setViewportSize(VIEWPORTS.DESKTOP);
         await VisualTestHelper.waitForViewportStability(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.RESPONSIVE.DESKTOP, { fullPage: true });
 
-        // ==============================================
-        // COMPARISON 2: Tablet view (768x1024)
-        // ==============================================
         await page.setViewportSize(VIEWPORTS.TABLET);
         await VisualTestHelper.waitForViewportStability(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.RESPONSIVE.TABLET, { fullPage: true });
 
-        // ==============================================
-        // COMPARISON 3: Mobile view (375x667)
-        // ==============================================
         await page.setViewportSize(VIEWPORTS.MOBILE);
         await VisualTestHelper.waitForViewportStability(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.RESPONSIVE.MOBILE, { fullPage: true });

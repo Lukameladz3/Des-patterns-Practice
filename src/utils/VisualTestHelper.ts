@@ -46,10 +46,7 @@ export class VisualTestHelper {
     static async waitForCategoryLoad(page: Page): Promise<void> {
         await page.waitForResponse(
             resp => resp.url().includes('bycat') && resp.status() === 200,
-            { timeout: 10000 }
         );
-        // Wait for DOM to stabilize after API response
-        // await page.waitForLoadState('networkidle');
     }
 
     /**
@@ -60,9 +57,7 @@ export class VisualTestHelper {
     static async waitForInitialProducts(page: Page): Promise<void> {
         await page.waitForResponse(
             resp => (resp.url().includes('entries') || resp.url().includes('view')) && resp.status() === 200,
-            { timeout: 10000 }
         );
-        // await page.waitForLoadState('networkidle');
     }
 
     /**
