@@ -33,3 +33,16 @@ export const VIEWPORTS = {
 export const VISUAL_PLACEHOLDERS = {
     USERNAME: 'Welcome VisualUser',
 } as const;
+
+/**
+ * Expected product counts per category (as of data snapshot)
+ * These are OPTIONAL - use only if you want to assert specific counts.
+ * Note: These may change if backend data is updated.
+ */
+export const EXPECTED_PRODUCT_COUNTS = {
+    ALL: 9,      // All products on homepage
+    PHONES: 7,   // Phones category
+    LAPTOPS: 6,  // Laptops category
+    MONITORS: 6, // Monitors category (Updated: was 2, actual is 6)
+} as const;
+

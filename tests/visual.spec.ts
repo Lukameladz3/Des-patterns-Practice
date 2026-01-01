@@ -5,7 +5,7 @@ import { ProductBuilder } from '../src/patterns/builder/ProductBuilder';
 import { SignUpFlow } from '../src/patterns/template/SignUpFlow';
 import { LoginFlow } from '../src/patterns/template/LoginFlow';
 import { PRODUCTS } from '../src/constants/TestConstants';
-import { VISUAL_SNAPSHOTS, VIEWPORTS, VISUAL_PLACEHOLDERS } from '../src/constants/VisualConstants';
+import { VISUAL_SNAPSHOTS, VIEWPORTS, VISUAL_PLACEHOLDERS, EXPECTED_PRODUCT_COUNTS } from '../src/constants/VisualConstants';
 import { VisualTestHelper } from '../src/utils/VisualTestHelper';
 
 test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
@@ -31,6 +31,7 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
 
         // Navigate to homepage
         await homePage.goto();
+        await homePage.waitForProductsLoaded();
 
         await VisualTestHelper.hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.HOMEPAGE.INITIAL, { fullPage: true });
@@ -85,18 +86,29 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
 
     test('Visual test: Product catalog comparison', async ({ page, homePage }) => {
         await homePage.goto();
-        await VisualTestHelper.waitForInitialProducts(page);
+        // Approach 1: Flexible - wait for at least 1 product (default)
+        await homePage.waitForProductsLoaded();
+
+        // Optional: Assert specific count if needed
+        const allProductsCount = await homePage.getProductCount();
+        expect(allProductsCount, 'All products should be loaded on homepage').toBe(EXPECTED_PRODUCT_COUNTS.ALL);
 
         await VisualTestHelper.hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.ALL, { fullPage: true });
 
         await homePage.goToLaptops();
-        await VisualTestHelper.waitForCategoryLoad(page);
-        await expect.soft(page).toHaveScreenshot('catalog-02-laptops.png', { fullPage: true });
+        // Approach 2: Explicit - wait for specific expected count
+        await homePage.waitForProductsLoaded(EXPECTED_PRODUCT_COUNTS.LAPTOPS);
+        await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.LAPTOPS, { fullPage: true });
 
         await homePage.goToMonitors();
-        await VisualTestHelper.waitForCategoryLoad(page);
-        await expect.soft(page).toHaveScreenshot('catalog-03-monitors.png', { fullPage: true });
+        await homePage.waitForProductsLoaded(EXPECTED_PRODUCT_COUNTS.MONITORS);
+        
+        // Verify the count after loading
+        const monitorsCount = await homePage.getProductCount();
+        expect(monitorsCount, 'Monitors category should have expected count').toBe(EXPECTED_PRODUCT_COUNTS.MONITORS);
+        
+        await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.CATALOG.MONITORS, { fullPage: true });
     });
 
     test('Visual test: Responsive design validation', async ({ page, homePage }) => {

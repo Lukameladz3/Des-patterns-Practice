@@ -21,6 +21,11 @@ export class HomePage extends BasePage {
     readonly monitorsCategory: Locator;
     readonly productCardImages: Locator;
 
+    // Product listing locators
+    readonly productList: Locator;
+    readonly productCards: Locator;
+    readonly productTitles: Locator;
+
     constructor(page: Page) {
         super(page);
         this.signUpLink = page.locator('#signin2');
@@ -34,6 +39,10 @@ export class HomePage extends BasePage {
         this.laptopsCategory = page.getByRole('link', { name: 'Laptops' });
         this.monitorsCategory = page.getByRole('link', { name: 'Monitors' });
         this.productCardImages = page.locator('.card-img-top');
+
+        this.productList = page.locator('#tbodyid');
+        this.productCards = page.locator('.card');
+        this.productTitles = page.locator('.card-title a');
     }
 
     /**
@@ -111,5 +120,41 @@ export class HomePage extends BasePage {
      */
     async clickProduct(productName: string): Promise<void> {
         await this.page.getByRole('link', { name: productName }).click();
+    }
+
+    /**
+     * Get the current count of visible products on the page.
+     * Useful for assertions and verification in tests.
+     * 
+     * @returns Promise resolving to the number of visible product cards
+     * 
+     * @example
+     * const count = await homePage.getProductCount();
+     * expect(count).toBeGreaterThan(0);
+     */
+    async getProductCount(): Promise<number> {
+        return await this.productCards.count();
+    }
+
+    /**
+     * Wait for products to load and be visible in the UI.
+     * This ensures the product list is ready for interaction or visual testing.
+     * 
+     * @param minProducts - Minimum number of products expected (default: 1)
+     *                      Pass a specific count if you know the expected number for a category
+     * 
+     * @example
+     * // Wait for at least 1 product (default)
+     * await homePage.waitForProductsLoaded();
+     * 
+     * // Wait for specific count (e.g., 7 phones)
+     * await homePage.waitForProductsLoaded(7);
+     */
+    async waitForProductsLoaded(minProducts: number = 1): Promise<void> {
+        // Wait for at least the minimum number of product cards to be visible
+        await this.productCards.nth(minProducts - 1).waitFor({ state: 'visible' });
+        
+        // Wait for product images to load (ensures visual stability)
+        await this.productCardImages.first().waitFor({ state: 'visible' });
     }
 }

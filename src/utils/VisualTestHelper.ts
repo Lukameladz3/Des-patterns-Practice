@@ -37,28 +37,6 @@ export class VisualTestHelper {
         }, placeholder);
     }
 
-    /**
-     * Waits for category products to load by monitoring the network response.
-     * 
-     * @param page - Playwright Page instance
-     * @returns Promise that resolves when the category API call completes
-     */
-    static async waitForCategoryLoad(page: Page): Promise<void> {
-        await page.waitForResponse(
-            resp => resp.url().includes('bycat') && resp.status() === 200,
-        );
-    }
-
-    /**
-     * Waits for initial product listing to load on homepage.
-     * 
-     * @param page - Playwright Page instance
-     */
-    static async waitForInitialProducts(page: Page): Promise<void> {
-        await page.waitForResponse(
-            resp => (resp.url().includes('entries') || resp.url().includes('view')) && resp.status() === 200,
-        );
-    }
 
     /**
      * Waits for viewport size change to complete and layout to stabilize.
