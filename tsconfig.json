@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "commonjs",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "moduleResolution": "node",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "declaration": true,
+        "outDir": "./dist",
+        "rootDir": "./",
+        "baseUrl": ".",
+        "paths": {
+            "@patterns/*": [
+                "src/patterns/*"
+            ],
+            "@pages/*": [
+                "src/pages/*"
+            ],
+            "@tests/*": [
+                "tests/*"
+            ]
+        },
+        "experimentalDecorators": false,
+        "emitDecoratorMetadata": false,
+        "types": [
+            "node",
+            "@playwright/test"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "tests/**/*",
+        "playwright.config.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
