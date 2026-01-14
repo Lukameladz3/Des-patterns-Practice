@@ -53,11 +53,9 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update visual test snapshots [skip ci]"
-          file_pattern: "tests/**/*.png tests/**/*-snapshots/**"
+          file_pattern: "tests/"
           branch: ${{ github.event.inputs.branch || github.ref_name }}
           push_options: "--force"
-          skip_dirty_check: false
-          create_branch: false
 
       - name: Upload snapshots as artifacts
         if: always()
