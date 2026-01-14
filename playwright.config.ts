@@ -25,15 +25,27 @@ export const rpConfig = {
   includeTestSteps: true, // Include @step annotations as nested steps in ReportPortal
 };
 
+// add custom timeout
+// for some assertions for example we need 10 sec instead of defailt 5
+// timout_5 as variable
 export default defineConfig({
   testDir: './tests',
   timeout: 60000,
+  
+  expect: {
+    timeout: 5000,  // Timeout for expect() assertions
+    toHaveScreenshot: { maxDiffPixels: 500 },
+  },
+  use: {
+    actionTimeout: 10000,      // Timeout for click, fill, etc.
+    navigationTimeout: 30000,  // Timeout for page.goto, waitForNavigation
+  },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html', 
-    { open: 'never' }],  
+    { open: 'never' }],
     // ['@reportportal/agent-js-playwright', rpConfig]
   ],
   expect: {

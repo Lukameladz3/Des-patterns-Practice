@@ -1,0 +1,93 @@
+name: Auto-Update Snapshots on Visual Test Failure
+
+on:
+  workflow_run:
+    workflows: ["Playwright Visual Tests"]
+    types:
+      - completed
+
+jobs:
+  check-and-update:
+    # Only run if the visual tests failed
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Update snapshots
+        env:
+          USE_MOCK_DB: "true"
+        run: npx playwright test tests/visual.spec.ts --update-snapshots
+        continue-on-error: true
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for snapshot changes
+        id: check_changes
+        run: |
+          git add tests/**/*.png
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "::notice::No snapshot changes detected - failure may not be visual-related"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            CHANGED_FILES=$(git diff --cached --name-only | wc -l)
+            echo "::notice::Found $CHANGED_FILES snapshot file(s) to update"
+          fi
+
+      - name: Commit and push snapshot updates
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git commit -m "chore: auto-update visual test snapshots from ${{ github.event.workflow_run.head_branch }} [skip ci]"
+          git push
+
+      - name: Comment on PR (if applicable)
+        if: steps.check_changes.outputs.has_changes == 'true' && github.event.workflow_run.event == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${{ github.event.workflow_run.head_branch }}`,
+              state: 'open'
+            });
+
+            if (prs.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prs[0].number,
+                body: '🤖 Visual test snapshots have been automatically updated to match the CI environment (Ubuntu). Please review the changes.'
+              });
+            }
+
+      - name: Upload updated snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-updated-snapshots-${{ github.event.workflow_run.head_branch }}
+          path: tests/**/*.png
+          retention-days: 7

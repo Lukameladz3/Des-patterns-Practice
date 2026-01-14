@@ -31,7 +31,13 @@ test.describe('Visual Testing - DemoBlaze E2E Journey', () => {
 
         // Navigate to homepage
         await homePage.goto();
-        await homePage.waitForProductsLoaded();
+        
+        // Wait for products to load before counting them
+        await homePage.waitForProductsLoaded(EXPECTED_PRODUCT_COUNTS.ALL);
+        
+        // Now get the count and verify
+        const count = await homePage.getProductCount();
+        expect(count).toBe(EXPECTED_PRODUCT_COUNTS.ALL);
 
         await VisualTestHelper.hideCarousel(page);
         await expect.soft(page).toHaveScreenshot(VISUAL_SNAPSHOTS.HOMEPAGE.INITIAL, { fullPage: true });
