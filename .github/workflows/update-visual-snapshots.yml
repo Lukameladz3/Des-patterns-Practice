@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,11 +38,26 @@ jobs:
           USE_MOCK_DB: "true"
         run: npx playwright test tests/visual.spec.ts --update-snapshots
 
+      - name: Debug - Check for changes
+        run: |
+          echo "Git status:"
+          git status
+          echo ""
+          echo "Changed PNG files:"
+          git diff --name-only -- '*.png' || echo "No changes"
+          echo ""
+          echo "Untracked PNG files:"
+          git ls-files --others --exclude-standard -- '*.png' || echo "None"
+
       - name: Commit and push snapshot changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update visual test snapshots [skip ci]"
-          file_pattern: "tests/**/*.png"
+          file_pattern: "tests/**/*.png tests/**/*-snapshots/**"
+          branch: ${{ github.event.inputs.branch || github.ref_name }}
+          push_options: "--force"
+          skip_dirty_check: false
+          create_branch: false
 
       - name: Upload snapshots as artifacts
         if: always()
