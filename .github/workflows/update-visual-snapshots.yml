@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref }}
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -57,7 +57,7 @@ jobs:
         with:
           commit_message: "chore: update visual test snapshots [skip ci]"
           file_pattern: "."
-          branch: ${{ github.event.inputs.branch || github.ref_name }}
+          branch: ${{ github.ref_name }}
           push_options: "--force"
           disable_globbing: true
 
