@@ -2,11 +2,6 @@ name: Update Visual Test Snapshots
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to update snapshots on"
-        required: false
-        default: ""
 
 jobs:
   update-snapshots:
