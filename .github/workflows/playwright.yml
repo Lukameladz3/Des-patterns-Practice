@@ -29,7 +29,8 @@ jobs:
         env:
           USE_MOCK_DB: "true"
         # --shard ensures tests are split; --reporter=blob is required for merging later
-        run: npx playwright test tests/visual.spec.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --reporter=blob
+        # we add github reporter to get annotations in PRs
+        run: npx playwright test tests/visual.spec.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --reporter=blob,github
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -60,13 +61,22 @@ jobs:
           merge-multiple: true
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./all-blobs
+        run: npx playwright merge-reports --reporter html,json,junit ./all-blobs
 
       - name: Upload final HTML report artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: playwright-report/
           retention-days: 30
+
+      - name: Upload additional reports (JSON, JUnit)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-reports
+          path: test-reports/
+          retention-days: 7
+          
 
   deploy:
     name: Deploy to GitHub Pages

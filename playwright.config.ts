@@ -31,7 +31,7 @@ export const rpConfig = {
 export default defineConfig({
   testDir: './tests',
   timeout: 60000,
-  
+
   expect: {
     timeout: 5000,  // Timeout for expect() assertions
     toHaveScreenshot: { maxDiffPixels: 500 },
@@ -44,18 +44,15 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [['html', 
-    { open: 'never' }],
-    // ['@reportportal/agent-js-playwright', rpConfig]
+  reporter: [
+    ["list"],
+    ['dot'],
+    ['github'],
+    ["html", { open: "never" }],
+    ["json", { outputFile: "test-reports/results.json" }],
+    ["junit", { outputFile: "test-reports/junit-results.xml" }]
   ],
-  expect: {
-    toHaveScreenshot: { maxDiffPixels: 500 },
-  },
-  use: {
-    baseURL: 'https://www.demoblaze.com',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-  },
+
 
   projects: [
     {
