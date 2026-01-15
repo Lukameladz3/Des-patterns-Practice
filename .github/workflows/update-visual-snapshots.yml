@@ -42,24 +42,25 @@ jobs:
         run: |
           echo "Git status:"
           git status
-          echo ""
-          echo "Changed PNG files:"
-          git diff --name-only -- '*.png' || echo "No changes"
-          echo ""
-          echo "Untracked PNG files:"
-          git ls-files --others --exclude-standard -- '*.png' || echo "None"
-          echo ""
-          echo "All files in tests directory:"
-          find tests -type f -name "*.png" || echo "No PNG files found"
 
       - name: Commit and push snapshot changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update visual test snapshots [skip ci]"
-          file_pattern: "."
-          branch: ${{ github.ref_name }}
-          push_options: "--force"
-          disable_globbing: true
+        run: |
+          # 1. Setup Git User
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # 2. Add changes
+          git add .
+
+          # 3. Commit and Push if there are changes
+          if [[ -n $(git status -s) ]]; then
+            git commit -m "chore: update visual test snapshots [skip ci]"
+            # Push explicitly to the current branch
+            git push origin HEAD:${{ github.ref_name }}
+            echo "Changes pushed successfully."
+          else
+            echo "No changes to commit."
+          fi
 
       - name: Upload snapshots as artifacts
         if: always()
